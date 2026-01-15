@@ -1,35 +1,77 @@
 import pytest
-from main import BooksCollector
+from main import BooksCollector  # Укажите правильный путь к вашему классу BooksCollector
 
 class TestBooksCollector:
+
+    def test_add_new_book_one_book(self):
+        # Создаем экземпляр класса BooksCollector
+        collector = BooksCollector()
+        # Добавляем новую книгу
+        collector.add_new_book('Ромео и Джульетта')
+        # Проверяем, что книга добавлена в коллекцию
+        assert 'Ромео и Джульетта' in collector.get_books_genre()
+
+    def test_add_new_book_default_genre_is_empty(self):
+        # Создаем экземпляр класса BooksCollector
+        collector = BooksCollector()
+        # Добавляем новую книгу
+        collector.add_new_book('Ромео и Джульетта')
+        # Проверяем, что жанр новой книги по умолчанию - пустая строка
+        assert collector.get_book_genre('Ромео и Джульетта') == ''
 
     @pytest.mark.parametrize("book_name", [
         "Ромео и Джульетта",
         "Мастер и Маргарита",
         "Король Лев"
     ])
-    def test_add_new_book(self, collection, book_name):
-        collection.add_new_book(book_name)
-        assert book_name in collection.get_books_genre()
-        assert collection.get_book_genre(book_name) == ''
+    def test_add_new_book_multiple_books(self, book_name):
+        # Создаем экземпляр класса BooksCollector
+        collector = BooksCollector()
+        # Добавляем новую книгу
+        collector.add_new_book(book_name)
+        # Проверяем, что книга добавлена в коллекцию
+        assert book_name in collector.get_books_genre()
 
-    def test_set_book_genre(self, collection):
+    def test_add_book_already_in_list(self):
+        collector = BooksCollector()
+        book_name = 'Ромео и Джульетта'
+        collector.add_new_book(book_name)
+        collector.add_new_book(book_name)
+        assert list(collector.books_genre.keys()).count(book_name) == 1
+
+
+    import pytest
+from main import BooksCollector  # Укажите правильный путь к вашему классу BooksCollector
+
+class TestBooksCollector:
+
+    def test_add_two_books(self):
+        collector = BooksCollector()
+        collector.add_new_book('Гордость и предубеждение и зомби')
+        collector.add_new_book('Что делать, если ваш кот хочет вас убить')
+        assert len(collector.get_books_genre()) == 2  # Проверяем, что добавилось именно две книги
+
+    def test_set_book_genre(self):
+        collector = BooksCollector()
         book = "Книга"
-        collection.add_new_book(book)
-        collection.set_book_genre(book, "Фантастика")
-        assert collection.get_book_genre(book) == "Фантастика"
+        collector.add_new_book(book)
+        collector.set_book_genre(book, "Фантастика") #Устанавливаем жанр для книги
+        assert collector.get_book_genre(book) == "Фантастика" #Проверяем, что жанр установился корректно
 
-    def test_get_book_genre_returns_empty_for_new_book(self, collection):
+    def test_get_book_genre_returns_empty_for_new_book(self):
+        collector = BooksCollector()
         book = "Книга"
-        collection.add_new_book(book)
-        assert collection.get_book_genre(book) == ''
+        collector.add_new_book(book)
+        assert collector.get_book_genre(book) == '' #Добавлена проверка на пустую строку
 
-    def test_get_book_genre_returns_correct_genre_from_dict(self, collection):
+    def test_get_book_genre_returns_correct_genre_from_dict(self):
+        collector = BooksCollector()
         book = "Книга"
         genre = "Детективы"
-        # Проставляем жанр напрямую, без использования set_book_genre
-        collection.books_genre[book] = genre
-        assert collection.get_book_genre(book) == genre
+        collector.add_new_book(book)
+        collector.set_book_genre(book, genre) #Теперь используем set_book_genre
+        assert collector.get_book_genre(book) == genre #Проверяем, что get_book_genre возвращает правильный жанр
+
 
     def test_set_genre_for_nonexistent_book_does_nothing(self, collection):
         collection.set_book_genre("Неизвестная книга", "Фантастика")
